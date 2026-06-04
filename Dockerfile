@@ -1,17 +1,17 @@
-FROM php:8.2-apache
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
+    php8.1 \
+    php8.1-cli \
     libimage-exiftool-perl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY index.php /var/www/html/index.php
+WORKDIR /app
 
-RUN echo "upload_max_filesize=500M" > /usr/local/etc/php/conf.d/uploads.ini \
-    && echo "post_max_size=500M" >> /usr/local/etc/php/conf.d/uploads.ini \
-    && echo "memory_limit=512M" >> /usr/local/etc/php/conf.d/uploads.ini
+COPY index.php /app/index.php
 
-RUN a2enmod rewrite
+EXPOSE 8080
 
-EXPOSE 80
-
-CMD ["apache2-foreground"]
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "/app"]
